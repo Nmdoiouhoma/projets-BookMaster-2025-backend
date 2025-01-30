@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  postgresql:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: bookmaster_db
+      POSTGRES_USER: bookmaster_user
+      POSTGRES_PASSWORD: azerty
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - "${PORT}:5432"
+    env_file:
+      - .env
+    networks:
+      - app-network
+    command: ["postgres", "-c", "log_statement=all"]
+volumes:
+  data:
+
+networks:
+  app-network:
+    driver: bridge

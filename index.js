@@ -4,26 +4,27 @@ const cors = require('cors');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
-const authMiddlewares = require('./Middlewares/AuthMiddlewares');
-
+const bodyParser = require('body-parser')
+const Database = require("./config/database");
+const UserModel = require("./models/UserModel");
 app.use(express.json());
 app.use(cors());
-
-//
-let users = [
-    { id: 1, name: "nakib", email: "nakib@example.com", password: "password123" },
-    { id: 2, name: "Jane Doe", email: "janedoe@example.com", password: "password456" }
-];
 
 // Route pour la page d'accueil
 app.get('/', (req, res) => {
     res.send('Page d\'accueil - BookMaster');
 });
 
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
+    try {
+        const users = await UserModel.findAll(); // ✅ Correction de findAll()
+        res.status(200).json(users); // ✅ Utilisation correcte de la variable
+    } catch (error) {
+        console.error("❌ Erreur lors de la récupération des utilisateurs :", error);
+        res.status(500).json({ error: "Erreur interne du serveur" });
+    }
+});
 
-    res.status(200).json(users);
-})
 
 app.post('/users', (req, res) => {
     const {name, email, password} = req.body;
@@ -48,6 +49,17 @@ app.delete('/users/:id', (req, res) => {
     res.status(200).json(`Element avec id ${id} à été suprimé`)
 })
 
-app.listen(port, () => {
-    console.log(`Serveur démarré sur le port ${port}`);
-});
+
+const dbStart = async () =>{
+    await new Database().connect();
+    app.use(bodyParser.json());
+    app.use('*',(req,res)=>{
+        res.status(404).send('Not found');
+        app.listen(port, () => {
+            console.log(`Serveur démarré sur le port ${port}`);
+        });
+
+    });
+}
+
+dbStart()

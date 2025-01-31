@@ -2,16 +2,17 @@ version: '3.1'
 
 services:
   postgresql:
+    container_name: data-postgresql-1
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_DB: bookmaster_db
-      POSTGRES_USER: bookmaster_user
-      POSTGRES_PASSWORD: azerty
+      POSTGRES_DB: MABD
+      POSTGRES_USER: MONUSERNAME
+      POSTGRES_PASSWORD: MONMOTDEPASSE
     volumes:
       - data:/var/lib/postgresql/data
     ports:
-      - "${PORT}:5432"
+      - "5432:5432"
     env_file:
       - .env
     networks:
@@ -19,7 +20,6 @@ services:
     command: ["postgres", "-c", "log_statement=all"]
 volumes:
   data:
-
 networks:
   app-network:
     driver: bridge

@@ -1,20 +1,21 @@
-const { DataTypes, UUIDV4, UUID, Sequelize} = require('sequelize');
+const { DataTypes } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 const database = require('../config/database');
 const sequelize = new database().getSequelize()
-class UserModel {
 
-    constructor() {
-        const user = sequelize.define('user', {
+
+        const User = sequelize.define('user', {
             id: {
                 type: DataTypes.UUID,
-                defaultValue: UUIDV4,
+                autoIncrement: true,
                 primaryKey: true,
+                defaultValue: uuidv4,
             },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            lastName: {
+            lastname: {
                 type: DataTypes.STRING
             },
             email: {
@@ -29,21 +30,19 @@ class UserModel {
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             avatar: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             deleteAt: {
                 type: DataTypes.DATE,
                 allowNull: true,
-            },
-            timestamps: true,
-            paranoid: true
+            }
+            },{
+        timestamps: true,
+        paranoid: true
         })
 
-    }
-}
-
-module.exports = UserModel;
+module.exports = User;

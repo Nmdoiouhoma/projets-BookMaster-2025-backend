@@ -6,15 +6,15 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_DB: MABD
-      POSTGRES_USER: MONUSERNAME
-      POSTGRES_PASSWORD: MONMOTDEPASSE
+      POSTGRES_DB: bookmaster_db
+      POSTGRES_USER: bookmaster_user
+      POSTGRES_PASSWORD: azerty
     volumes:
       - data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     env_file:
-      - .env
+      - ../.env
     networks:
       - app-network
     command: ["postgres", "-c", "log_statement=all"]

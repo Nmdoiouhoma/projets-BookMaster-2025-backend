@@ -2,6 +2,7 @@ version: '3.1'
 
 services:
   postgresql:
+    container_name: data-postgresql-1
     image: postgres:latest
     restart: always
     environment:
@@ -11,15 +12,14 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
     ports:
-      - "${PORT}:5432"
+      - "5432:5432"
     env_file:
-      - .env
+      - ../.env
     networks:
       - app-network
     command: ["postgres", "-c", "log_statement=all"]
 volumes:
   data:
-
 networks:
   app-network:
     driver: bridge

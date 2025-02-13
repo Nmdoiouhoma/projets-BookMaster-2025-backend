@@ -6,8 +6,11 @@ const Database = require("./config/database");
 const userRouter = require("./router/UserRouter");
 const userModel = require('./models/UserModel');
 
+
 const app = express();
 const port = process.env.PORT || 3000;
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 
 app.use(express.json());
 app.use(cors());

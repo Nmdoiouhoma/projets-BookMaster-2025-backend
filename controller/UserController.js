@@ -85,6 +85,20 @@ class UserController {
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     };
+
+    getProfile = async (req, res) => {
+        try {
+            // On suppose que le middleware authenticateUser a déjà ajouté req.userDetails
+            const user = req.userDetails;
+            if (!user) {
+                return res.status(404).json({ error: "Utilisateur non trouvé" });
+            }
+            res.status(200).json(user);
+        } catch (error) {
+            console.error("Erreur lors de la récupération du profil:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+    };
 }
 
 module.exports = UserController;

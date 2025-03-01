@@ -23,7 +23,7 @@ exports.forgotPassword = async (req, res) => {
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        const resetLink = `http://localhost:3000/reset-password/${token}`;
+        const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${token}`;
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -41,29 +41,35 @@ exports.forgotPassword = async (req, res) => {
 };
 
 // 2. Réinitialisation du mot de passe
+// Fonction pour réinitialiser le mot de passe
 exports.resetPassword = async (req, res) => {
-    const { token } = req.params;
+    const { token } = req.query;  // On récupère le token depuis l'URL
     const { password } = req.body;
+
+    if (!token) {
+        return res.status(400).json({ message: "Token manquant ou invalide" });
+    }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Token décodé :", decoded); // Vérifie que l'ID est bien extrait
-
-        const user = await User.findByPk(decoded.id); // 🔥 CORRECTION ICI
-
+        const user = await User.findByPk(decoded.id);
         if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
 
-        // Hashage du nouveau mot de passe
+        // Hash du mot de passe avant de le stocker
         user.password = await bcrypt.hash(password, 10);
-
-        // Sauvegarde du nouveau mot de passe
         await user.save();
 
         res.json({ message: "Mot de passe réinitialisé avec succès." });
     } catch (error) {
-        console.error("Erreur reset password :", error);
+        console.error("Erreur dans resetPassword :", error);
         res.status(500).json({ message: "Lien invalide ou expiré", error: error.message });
     }
 };
+
+
+
+
+
+
 
 

@@ -60,30 +60,30 @@ const createUser = async (req, res) => {
 
 // Fonction pour la connexion (login) de l'utilisateur
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
         // Vérifier si l'utilisateur existe dans la base de données
         const user = await userModel.findOne({  // Utilisation de userModel ici
-            where: { email, deletedAt: { [Op.is]: null } }  // Ignore les utilisateurs soft deleted
+            where: { username, deletedAt: { [Op.is]: null } }  // Ignore les utilisateurs soft deleted
         });
 
         if (!user) {
-            return res.status(400).json({ error: "Email ou mot de passe invalide" });
+            return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe invalide" });
         }
 
         // Comparer les mots de passe (le mot de passe fourni avec le mot de passe stocké)
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ error: "Email ou mot de passe invalide" });
+            return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe invalide" });
         }
 
         // Générer un access token (JWT)
         const token = jwt.sign(
-            { id: user.id, email: user.email },  // Contenu du JWT : l'ID et l'email
-            JWT_SECRET,  // Clé secrète
-            { expiresIn: '1d' }  // Le token expire dans 1 jour
+            { id: user.id, username: user.username },
+            JWT_SECRET,
+            { expiresIn: '1d' }
         );
 
         // Réponse de succès avec le token JWT

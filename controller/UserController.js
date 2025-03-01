@@ -42,7 +42,6 @@ class UserController {
     deleteUser = async (req, res, next) => {
         const { id } = req.params;
         try {
-            // Suppression physique avec force: true
             const deleted = await UserModel.destroy({
                 where: { id },
                 force: true  // Cette option force la suppression physique

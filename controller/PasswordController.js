@@ -23,7 +23,7 @@ exports.forgotPassword = async (req, res) => {
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${token}`;
+        const resetLink = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -40,10 +40,24 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-// 2. Réinitialisation du mot de passe
-// Fonction pour réinitialiser le mot de passe
+exports.getResetPasswordPage = async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Vérification du token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Si le token est valide, on envoie la page HTML avec le cookie
+        res.cookie('resetToken', token, { secure: true, maxAge: 60 * 60 * 1000 }); // Expires in 1 hour
+        res.redirect('http://localhost:63342/BookMaster-2025/projets-BookMaster-2025-frontend/public/reset-password.html');
+    } catch (error) {
+        // Si le token est invalide ou expiré
+        return res.status(400).json({ message: 'Token invalide ou expiré.' });
+    }
+};
+
 exports.resetPassword = async (req, res) => {
-    const { token } = req.query;  // On récupère le token depuis l'URL
+    const { token } = req.params;
     const { password } = req.body;
 
     if (!token) {
@@ -51,6 +65,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     try {
+        // Vérification du token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findByPk(decoded.id);
         if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });

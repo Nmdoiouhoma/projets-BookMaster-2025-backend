@@ -1,4 +1,5 @@
 const UserModel = require('../models/UserModel');
+const BookModel = require('../models/BookModel');
 
 class UserController {
     constructor() {}
@@ -87,7 +88,6 @@ class UserController {
 
     getProfile = async (req, res) => {
         try {
-            // On suppose que le middleware authenticateUser a déjà ajouté req.userDetails
             const user = req.userDetails;
             if (!user) {
                 return res.status(404).json({ error: "Utilisateur non trouvé" });

@@ -1,42 +1,44 @@
 const { DataTypes } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const database = require('../config/database');
-const sequelize = new database().getSequelize()
+const sequelize = new database().getSequelize();
 
-const User = sequelize.define('user', {
-    id: {
+const Book = sequelize.define('Book', {
+    book_id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: uuidv4,  // Utilisation de uuidv4 pour générer un UUID automatiquement
+        defaultValue: DataTypes.UUIDV4,
     },
-    name: {
+    author: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    lastname: {
-        type: DataTypes.STRING
-    },
-    email: {
+    title: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
-    username: {
+    synopsis: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: true,
+    description: {
+        type: DataTypes.TEXT,
     },
-    avatar: {
+    publication_date: {
+        type: DataTypes.DATE,
+    },
+    genre: {
         type: DataTypes.STRING,
-        allowNull: true,
+    },
+    isbn: {
+        type: DataTypes.STRING,
+    },
+    page_count: {
+        type: DataTypes.INTEGER,
     },
 }, {
     timestamps: true,
     paranoid: true
 });
 
-module.exports = User;
+module.exports = Book;

@@ -4,6 +4,7 @@ const cors = require('cors');
 const Database = require("./config/database");
 const userRouter = require("./router/UserRouter");
 const userModel = require('./models/UserModel');
+const bookModel = require('./models/BookModel');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ const dbStart = async () => {
     try {
         await new Database().connect();
         await userModel.sync({ alter: true });
+        await bookModel.sync({ alter: true });
 
         app.listen(port, () => {
             console.log(`🚀 Serveur démarré sur http://localhost:${port}`);

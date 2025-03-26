@@ -24,8 +24,6 @@ router.post('/reset-password/:token', passwordController.resetPassword);
 // Route dynamique pour récupérer un utilisateur par ID (à placer à la fin)
 router.get('/:id', userController.getOneUser);
 
-// Routes protégées supplémentaires (elles utilisent également :id)
-// Note : assure-toi qu'elles ne rentrent pas en conflit avec des routes statiques
 router.delete('/:id', authenticateUser, userController.deleteUser);
 router.patch('/:id', authenticateUser, userController.updateUser);
 

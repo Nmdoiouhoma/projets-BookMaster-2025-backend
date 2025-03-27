@@ -12,6 +12,10 @@ const Space = sequelize.define('Space', {
         type: DataTypes.UUID,
         allowNull: false, // Obligatoire
     },
+    book_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+    },
     status: {
         type: DataTypes.STRING,
         allowNull: false,

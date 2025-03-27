@@ -21,6 +21,7 @@ app.use(cors());
 // Monte les routes après le middleware statique
 app.use('/', userRouter);
 spaceModel.belongsTo(userModel, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+spaceModel.belongsTo(bookModel, { foreignKey: 'book_id', onDelete: 'CASCADE' });
 // Démarrer la connexion à la base de données et le serveur
 const dbStart = async () => {
     try {

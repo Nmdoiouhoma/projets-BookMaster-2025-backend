@@ -12,6 +12,9 @@ router.get('/', userController.getHomePage);
 router.get('/users', userController.getAllUsers);
 router.get('/profile', authenticateUser, userController.getProfile);
 router.get('/reset-password/:token', passwordController.getResetPasswordPage);
+router.get('/user/me', authenticateUser, (req, res) => {
+    res.json(req.userDetails);  // Renvoie l'utilisateur connecté
+});
 
 // Routes d'authentification
 router.post('/signup', authController.createUser);

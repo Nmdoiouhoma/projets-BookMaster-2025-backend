@@ -17,10 +17,6 @@ const Book = sequelize.define('Book', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    synopsis: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     description: {
         type: DataTypes.TEXT,
     },
@@ -32,6 +28,8 @@ const Book = sequelize.define('Book', {
     },
     isbn: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
     },
     page_count: {
         type: DataTypes.INTEGER,

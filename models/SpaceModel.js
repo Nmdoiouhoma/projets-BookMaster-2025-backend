@@ -20,12 +20,21 @@ const Space = sequelize.define('Space', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    book_liked: {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    author: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    book_saved: {
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    add_date: {
+    date_added: {
         type: DataTypes.DATE,
+        allowNull: false,
         defaultValue: DataTypes.NOW,
     },
 }, {

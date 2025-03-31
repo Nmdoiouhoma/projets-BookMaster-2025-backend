@@ -14,6 +14,7 @@ const authenticateUser = async (req, res, next) => {
     try {
         // Vérifier et décoder le token
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("✅ Token décodé :", decoded)
         req.user = decoded;  // Stocker les données décodées dans req.user
 
         // Extraire l'ID utilisateur du token

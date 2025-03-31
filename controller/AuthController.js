@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 // Fonction pour l'inscription (signup) d'un utilisateur
 const createUser = async (req, res) => {
-    const { email, name, password, username } = req.body;  // Ajout de 'username' ici
+    const { email, name, password, username,avatar,lastname } = req.body;  // Ajout de 'username' ici
 
     try {
         // Vérifier si un utilisateur avec cet email existe déjà, y compris les utilisateurs supprimés (soft deleted)
@@ -36,7 +36,9 @@ const createUser = async (req, res) => {
         const newUser = await userModel.create({
             email,
             name,
-            username,  // Ajouter le username ici
+            username,
+            lastname,
+            avatar,
             password: hashedPassword
         });
 
@@ -71,14 +73,12 @@ const loginUser = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe invalide" });
         }
-
         // Comparer les mots de passe (le mot de passe fourni avec le mot de passe stocké)
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe invalide" });
         }
-
         // Générer un access token (JWT)
         const token = jwt.sign(
             { id: user.id, username: user.username },

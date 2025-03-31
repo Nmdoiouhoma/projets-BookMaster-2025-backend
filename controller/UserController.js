@@ -1,10 +1,10 @@
 const UserModel = require('../models/UserModel');
-const BookModel = require('../models/BookModel');
+const bookModel = require('../models/BookModel');
+const spaceModel = require('../models/SpaceModel');
 
 class UserController {
     constructor() {}
 
-    // Page d'accueil
     getHomePage = async (req, res) => {
         res.send("Page d'accueil - BookMaster");
     };
@@ -58,7 +58,6 @@ class UserController {
         }
     };
 
-
     // Mettre à jour un utilisateur
     updateUser = async (req, res, next) => {
         const { id } = req.params;
@@ -98,6 +97,31 @@ class UserController {
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     };
+
+    getListBook = async (req, res) => {
+        try{
+            const user_id = req.params.user_id;
+            if (!user_id) {
+                return res.status(400).json({error: "L'ID utilisateur est requis !"})
+            }
+            const bookList = await spaceModel.findAll({
+                where: {user_id: req.params.user_id},
+                attributes: ['status'],
+                include: [{
+                    model: bookModel,
+                    attributes: ['title','author','page_count'],
+                }],
+            })
+            if (!bookList || bookList.length === 0) {
+                return res.status(404).json({ error: "Aucun livre trouvé dans votre espace." });
+            }else {
+                return res.status(200).json({message: "Votre liste de livre à été trouvé avec succés", books: bookList});
+            }
+        }catch (error) {
+            console.error("Erreur lors de la récupération de la liste de livres :", error);
+            return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
+        }
+    }
 }
 
 module.exports = UserController;

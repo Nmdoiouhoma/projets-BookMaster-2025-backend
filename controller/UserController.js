@@ -109,7 +109,7 @@ class UserController {
                 attributes: ['status'],
                 include: [{
                     model: bookModel,
-                    attributes: ['title','author','page_count'],
+                    attributes: ['title','author','page_count','cover'],
                 }],
             })
             if (!bookList || bookList.length === 0) {

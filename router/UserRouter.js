@@ -3,7 +3,7 @@ const UserController = require('../controller/UserController');
 const authenticateUser = require('../middlewares/AuthMiddlewares');  // Middleware d'authentification
 const authController = require('../controller/AuthController');
 const passwordController = require('../controller/PasswordController');
-
+const bookController = require('../controller/BookController')
 const router = express.Router();
 const userController = new UserController(); // Instanciation
 
@@ -20,9 +20,14 @@ router.get('/user/me', authenticateUser, (req, res) => {
 router.post('/signup', authController.createUser);
 router.post('/login', authController.loginUser);
 
+//Routes enregistrement des livres
+router.post('/addBook', authenticateUser, bookController.addBook)
+
 // Routes pour réinitialisation du mot de passe
 router.post('/forgot-password', passwordController.forgotPassword);
 router.post('/reset-password/:token', passwordController.resetPassword);
+
+
 
 // Route dynamique pour récupérer un utilisateur par ID (à placer à la fin)
 router.get('/:id', userController.getOneUser);

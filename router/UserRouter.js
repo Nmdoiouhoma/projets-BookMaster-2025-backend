@@ -1,11 +1,11 @@
 const express = require('express');
 const UserController = require('../controller/UserController');
-const authenticateUser = require('../middlewares/AuthMiddlewares');  // Middleware d'authentification
+const authenticateUser = require('../middlewares/AuthMiddlewares');
 const authController = require('../controller/AuthController');
 const passwordController = require('../controller/PasswordController');
 const bookController = require('../controller/BookController')
 const router = express.Router();
-const userController = new UserController(); // Instanciation
+const userController = new UserController();
 
 // Routes publiques
 router.get('/', userController.getHomePage);
@@ -31,6 +31,7 @@ router.post('/reset-password/:token', passwordController.resetPassword);
 
 // Route dynamique pour récupérer un utilisateur par ID (à placer à la fin)
 router.get('/:id', userController.getOneUser);
+router.get('/getListBook/:user_id', userController.getListBook);
 
 router.delete('/:id', authenticateUser, userController.deleteUser);
 router.patch('/:id', authenticateUser, userController.updateUser);

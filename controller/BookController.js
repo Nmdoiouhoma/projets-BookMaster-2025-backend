@@ -5,7 +5,7 @@ const spaceModel = require('../models/SpaceModel')
 const addBook = async (req, res) => {
 
     try {
-        const {title, author, description, genre, isbn, publication_date, page_count,status,date_added} = req.body;
+        const {title, author, description, genre, isbn, publishedDate, page_count,status,date_added,cover} = req.body;
 
         const existingBook = await bookModel.findOne({
             where: {
@@ -21,10 +21,11 @@ const addBook = async (req, res) => {
         const newBook = await bookModel.create({
             title,
             author,
+            cover,
             description,
             genre,
             isbn,
-            publication_date,
+            publishedDate,
             page_count,
         });
 

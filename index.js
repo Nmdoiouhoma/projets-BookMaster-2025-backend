@@ -13,13 +13,18 @@ const port = process.env.PORT || 3000;
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(express.json());
-app.use(cors());
+
+app.use(cors({
+    origin: "http://localhost:63342",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
+}));
 
 // Monte les routes après le middleware statique
-app.use('/', userRouter);
+app.use('/', userRouter);app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 spaceModel.belongsTo(userModel, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 spaceModel.belongsTo(bookModel, { foreignKey: 'book_id', onDelete: 'CASCADE' });

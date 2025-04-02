@@ -4,8 +4,10 @@ const authenticateUser = require('../middlewares/AuthMiddlewares');  // Middlewa
 const authController = require('../controller/AuthController');
 const passwordController = require('../controller/PasswordController');
 const bookController = require('../controller/BookController')
+const upload = require("../middlewares/UploadMiddlewares");
 const router = express.Router();
-const userController = new UserController(); // Instanciation
+const userController = new UserController();
+
 
 // Routes publiques
 router.get('/', userController.getHomePage);
@@ -13,20 +15,18 @@ router.get('/users', userController.getAllUsers);
 router.get('/profile', authenticateUser, userController.getProfile);
 router.get('/reset-password/:token', passwordController.getResetPasswordPage);
 router.get('/user/me', authenticateUser, (req, res) => {
-    res.json(req.userDetails);  // Renvoie l'utilisateur connecté
+    res.json(req.userDetails);
 });
 
 // Routes d'authentification
-router.post('/signup', authController.createUser);
+router.post("/signup", upload.single("avatar"), authController.createUser);
 router.post('/login', authController.loginUser);
 
-//Routes enregistrement des livres
 router.post('/addBook', authenticateUser, bookController.addBook)
 
 // Routes pour réinitialisation du mot de passe
 router.post('/forgot-password', passwordController.forgotPassword);
 router.post('/reset-password/:token', passwordController.resetPassword);
-
 
 
 // Route dynamique pour récupérer un utilisateur par ID (à placer à la fin)

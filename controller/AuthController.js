@@ -6,21 +6,30 @@ const { Op } = require('sequelize');
 // Clé secrète pour signer les JWT (toujours garder ceci privé)
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
-// Fonction pour l'inscription (signup) d'un utilisateur
 const createUser = async (req, res) => {
-    const { email, name, password, username,avatar,lastname } = req.body;  // Ajout de 'username' ici
+    const { email, name, password, username, lastname } = req.body;
+    let avatarPath = null;
+
+
+    // Vérifie si un fichier avatar a été téléchargé
+    if (req.file) {
+        avatarPath = `/uploads/avatars/${req.file.filename}`;
+        console.log("✅ Avatar téléchargé :", avatarPath); // Log pour vérifier que l'avatar est bien reçu
+    } else {
+        console.log("❌ Aucun avatar envoyé");
+    }
 
     try {
-        // Vérifier si un utilisateur avec cet email existe déjà, y compris les utilisateurs supprimés (soft deleted)
+        // Vérification de l'email existant
         const existingUser = await userModel.findOne({
-            where: { email, deletedAt: { [Op.is]: null } }  // Vérifie si l'email existe et ignore les utilisateurs soft deleted
+            where: { email, deletedAt: { [Op.is]: null } }
         });
 
         if (existingUser) {
             return res.status(400).json({ error: "Cet email est déjà utilisé" });
         }
 
-        // Vérifier si le username est déjà utilisé
+        // Vérification du username existant
         const existingUsername = await userModel.findOne({
             where: { username, deletedAt: { [Op.is]: null } }
         });
@@ -32,27 +41,27 @@ const createUser = async (req, res) => {
         // Hachage du mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Création de l'utilisateur dans la base de données
+        // Création de l'utilisateur avec ou sans avatar
         const newUser = await userModel.create({
             email,
             name,
             username,
             lastname,
-            avatar,
+            avatar: avatarPath, // Sauvegarde du chemin de l'avatar
             password: hashedPassword
         });
 
-        // Générer un access token (JWT)
+        // Génération du token JWT
         const token = jwt.sign(
-            { id: newUser.id, email: newUser.email },  // Contenu du JWT : l'ID et l'email
-            JWT_SECRET,  // Clé secrète
-            { expiresIn: '1d' }  // Le token expire dans 1 jour
+            { id: newUser.id, email: newUser.email },
+            JWT_SECRET,
+            { expiresIn: "1d" }
         );
 
-        // Réponse de succès avec le token JWT
+        // Réponse avec succès et le token
         res.status(201).json({
             message: "Utilisateur créé avec succès",
-            token  // Ajouter le token dans la réponse
+            token
         });
     } catch (error) {
         console.error("Erreur lors de l'inscription de l'utilisateur :", error);

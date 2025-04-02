@@ -98,6 +98,7 @@ class UserController {
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     };
+
 }
 
 module.exports = UserController;

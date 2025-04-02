@@ -5,9 +5,7 @@ const Database = require("./config/database");
 const userRouter = require("./router/UserRouter");
 const userModel = require('./models/UserModel');
 const bookModel = require('./models/BookModel');
-const {Sequelize} = require("sequelize");
 const spaceModel = require('./models/SpaceModel');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -21,6 +19,8 @@ app.use(cors({
     allowedHeaders: "Content-Type,Authorization"
 }));
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Monte les routes après le middleware statique
 app.use('/', userRouter);app.use(express.static(path.join(__dirname, 'public')));
 
@@ -32,7 +32,6 @@ spaceModel.belongsTo(bookModel, { foreignKey: 'book_id', onDelete: 'CASCADE' });
 userModel.hasOne(spaceModel, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 bookModel.hasMany(spaceModel, { foreignKey: 'book_id', onDelete: 'CASCADE'});
 
-// Démarrer la connexion à la base de données et le serveur
 const dbStart = async () => {
     try {
         await new Database().connect();

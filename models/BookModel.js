@@ -20,7 +20,7 @@ const Book = sequelize.define('Book', {
     description: {
         type: DataTypes.TEXT,
     },
-    publication_date: {
+    publishedDate: {
         type: DataTypes.DATE,
     },
     genre: {
@@ -33,6 +33,10 @@ const Book = sequelize.define('Book', {
     },
     page_count: {
         type: DataTypes.INTEGER,
+    },
+    cover: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
 }, {
     timestamps: true,

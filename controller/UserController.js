@@ -98,7 +98,6 @@ class UserController {
         }
     };
 
-
     getListBook = async (req, res) => {
         try{
             const user_id = req.params.user_id;
@@ -123,6 +122,64 @@ class UserController {
             return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
         }
     }
+
+    deleteBook = async (req, res) => {
+        const { user_id } = req.params;
+        const { book_id } = req.params;
+
+        try{
+            if(!user_id || !book_id){
+                return res.status(400).json({error: "L'id utilisateur ou l'id du livre sont incorrect"})
+            }
+            const bookDeleted = await spaceModel.destroy({
+                where: { user_id, book_id },
+                force: true,
+            })
+            if (!bookDeleted) {
+                return res.status(200).json({message: `Le livre avec l'id ${book_id} a bien été supprimé`})
+            }else{
+                return res.status(400).json({error: `Erreur le livre n'a pas été trouvé ${book_id}, ${user_id}`})
+            }
+        }catch (error) {
+            console.error("Erreur lors de la suppression du livre",error)
+            return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
+        }
+    }
+
+    updateBook = async (req, res) => {
+        const { user_id, book_id } = req.params;
+        const { status, current_page } = req.body;
+
+        if (!status && !current_page) {
+            return res.status(400).json({ error: "Aucun des champs n'a été saisi" });
+        }
+
+        try {
+            // 🔹 Met à jour et récupère le nombre de lignes modifiées
+            const [updatedRows] = await spaceModel.update(
+                { status, current_page },
+                { where: { user_id, book_id } }
+            );
+
+            if (updatedRows === 0) {
+                return res.status(404).json({ error: `Aucune mise à jour effectuée. Vérifiez les IDs (${user_id}, ${book_id})` });
+            }
+
+            const updatedBook = await spaceModel.findOne({ where: { user_id, book_id } });
+
+            console.log("📌 Nouveau status :", updatedBook.status, "📖 Page actuelle :", updatedBook.current_page);
+
+            return res.status(200).json({
+                message: `Le livre avec l'ID ${book_id} a été mis à jour avec succès`,
+                book: updatedBook
+            });
+
+        } catch (error) {
+            console.error("❌ Erreur lors de la mise à jour du livre :", error);
+            return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
+        }
+    };
+
 }
 
 module.exports = UserController;

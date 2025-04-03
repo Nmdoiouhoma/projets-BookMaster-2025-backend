@@ -34,5 +34,7 @@ router.get('/getListBook/:user_id', userController.getListBook);
 
 router.delete('/:id', authenticateUser, userController.deleteUser);
 router.patch('/:id', authenticateUser, userController.updateUser);
+router.delete('/deleteBook/:user_id/:book_id',authenticateUser, userController.deleteBook);
+router.patch('/updateBook/:user_id/:book_id', authenticateUser, userController.updateBook)
 
 module.exports = router;

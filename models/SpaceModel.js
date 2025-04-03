@@ -28,8 +28,8 @@ const Space = sequelize.define('Space', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    book_saved: {
-        type: DataTypes.TEXT,
+    current_page: {
+        type: DataTypes.INTEGER,
         allowNull: true,
     },
     date_added: {

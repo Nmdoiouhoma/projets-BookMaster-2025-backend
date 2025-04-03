@@ -10,7 +10,6 @@ const createUser = async (req, res) => {
     const { email, name, password, username, lastname } = req.body;
     let avatarPath = null;
 
-
     // Vérifie si un fichier avatar a été téléchargé
     if (req.file) {
         avatarPath = `/uploads/avatars/${req.file.filename}`;

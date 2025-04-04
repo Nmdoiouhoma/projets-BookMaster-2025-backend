@@ -22,7 +22,8 @@ app.use(cors({
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Monte les routes après le middleware statique
-app.use('/', userRouter);app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', userRouter);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
@@ -30,7 +31,7 @@ spaceModel.belongsTo(userModel, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 spaceModel.belongsTo(bookModel, { foreignKey: 'book_id', onDelete: 'CASCADE' });
 
 userModel.hasOne(spaceModel, { foreignKey: 'user_id', onDelete: 'CASCADE' });
-bookModel.hasMany(spaceModel, { foreignKey: 'book_id', onDelete: 'CASCADE'});
+bookModel.hasMany(spaceModel, { foreignKey: 'book_id', onDelete: 'CASCADE' });
 
 const dbStart = async () => {
     try {
@@ -38,14 +39,26 @@ const dbStart = async () => {
         await userModel.sync({ alter: true });
         await bookModel.sync({ alter: true });
         await spaceModel.sync({ alter: true });
-
-        app.listen(port, () => {
-            console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
-        });
     } catch (error) {
         console.error("❌ Erreur lors du démarrage de l'application :", error);
         process.exit(1);
     }
 };
 
-dbStart();
+// Vérifie si le fichier est exécuté directement
+if (require.main === module) {
+    dbStart().then(() => {
+        app.listen(port, () => {
+            console.log(`Listening on the port ${port}`);
+        });
+    }).catch((error) => {
+        console.error("❌ Erreur lors du démarrage du serveur :", error);
+    });
+}
+
+// Si ce fichier est importé dans un autre fichier, on ne démarre pas le serveur
+module.exports = {
+    app,
+    dbStart,
+    userModel,
+};

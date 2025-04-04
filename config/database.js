@@ -4,6 +4,7 @@ require('dotenv').config();
 class Database {
     constructor() {
         this.sequelize = new Sequelize(
+
             process.env.DB_NAME,
             process.env.DB_USER,
             process.env.DB_PASS,

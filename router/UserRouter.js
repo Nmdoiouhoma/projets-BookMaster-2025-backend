@@ -17,6 +17,11 @@ router.get('/user/me', authenticateUser, (req, res) => {
     res.json(req.userDetails);
 });
 
+router.delete('/:id', authenticateUser, userController.deleteUser);
+router.delete('/deleteBook/:space_id/:book_id',authenticateUser, userController.deleteBook);
+router.patch('/:id', authenticateUser, userController.updateUser);
+router.patch('/updateBook/:user_id/:book_id', authenticateUser, userController.updateBook)
+
 // Routes d'authentification
 router.post("/signup", upload.single("avatar"), authController.createUser);
 router.post('/login', authController.loginUser);
@@ -27,14 +32,10 @@ router.post('/addBook', authenticateUser, bookController.addBook)
 router.post('/forgot-password', passwordController.forgotPassword);
 router.post('/reset-password/:token', passwordController.resetPassword);
 
-
 // Route dynamique pour récupérer un utilisateur par ID (à placer à la fin)
 router.get('/:id', userController.getOneUser);
 router.get('/getListBook/:user_id', userController.getListBook);
+router.get('/getBook/:book_id', userController.getOneBook);
 
-router.delete('/:id', authenticateUser, userController.deleteUser);
-router.patch('/:id', authenticateUser, userController.updateUser);
-router.delete('/deleteBook/:user_id/:book_id',authenticateUser, userController.deleteBook);
-router.patch('/updateBook/:user_id/:book_id', authenticateUser, userController.updateBook)
 
 module.exports = router;

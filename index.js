@@ -7,7 +7,7 @@ const userModel = require('./models/UserModel');
 const bookModel = require('./models/BookModel');
 const spaceModel = require('./models/SpaceModel');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use(cors({
     origin: "http://localhost:63342",
-    methods: "GET,POST,PUT,DELETE",
+    methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: "Content-Type,Authorization"
 }));
 

@@ -106,7 +106,7 @@ class UserController {
             }
             const bookList = await spaceModel.findAll({
                 where: {user_id: req.params.user_id},
-                attributes: ['status'],
+                attributes: ['status','book_id'],
                 include: [{
                     model: bookModel,
                     attributes: ['title','author','page_count','cover'],
@@ -123,23 +123,54 @@ class UserController {
         }
     }
 
+    getOneBook = async (req, res) => {
+        const book_id = req.params.book_id
+        try{
+            if(!book_id){
+                return res.status(400).json({error: "L'id du livre est requis !"})
+            }
+            const book = await spaceModel.findOne({
+                where: {book_id: req.params.book_id},
+                attributes:['space_id'],
+                include: [{
+                    model: bookModel,
+                    attributes: ['title','author','page_count','cover'],
+                }],
+            })
+            if(!book){
+                return res.status(400).json({error: "Le livre est introuvable !"})
+            }else{
+                return res.status(200).json({message: "Votre livre à bien été trouvé", books: book});
+            }
+        }catch (error) {
+            console.error("Erreur lors de la récupération de votre livre :", error);
+            return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
+        }
+    }
+
     deleteBook = async (req, res) => {
-        const { user_id } = req.params;
+        const { space_id } = req.params;
         const { book_id } = req.params;
 
         try{
-            if(!user_id || !book_id){
-                return res.status(400).json({error: "L'id utilisateur ou l'id du livre sont incorrect"})
+            if(!space_id){
+                return res.status(400).json({error: "L'id de l'espace personnel est introuvable"})
             }
-            const bookDeleted = await spaceModel.destroy({
-                where: { user_id, book_id },
+            const bookSpaceDeleted = await spaceModel.destroy({
+                where: { space_id },
                 force: true,
             })
-            if (!bookDeleted) {
-                return res.status(200).json({message: `Le livre avec l'id ${book_id} a bien été supprimé`})
+
+            const bookDeleted = await bookModel.destroy({
+                where: { book_id },
+                force:true,
+            })
+            if (!bookSpaceDeleted && !bookDeleted) {
+                return res.status(200).json({message: `Le livre avec l'id espace : ${space_id} id book ${book_id} a bien été supprimé`})
             }else{
-                return res.status(400).json({error: `Erreur le livre n'a pas été trouvé ${book_id}, ${user_id}`})
+                return res.status(400).json({error: `Erreur le livre n'a pas été trouvé id space : ${space_id}`})
             }
+
         }catch (error) {
             console.error("Erreur lors de la suppression du livre",error)
             return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });

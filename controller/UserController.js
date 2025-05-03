@@ -131,7 +131,7 @@ class UserController {
             }
             const book = await spaceModel.findOne({
                 where: {book_id: req.params.book_id},
-                attributes:['space_id'],
+                attributes:['space_id','current_page'],
                 include: [{
                     model: bookModel,
                     attributes: ['title','author','page_count','cover'],

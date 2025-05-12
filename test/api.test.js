@@ -1,80 +1,76 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const { app, dbStart } = require("../index");
-chai.use(chaiHttp);
-chai.should();
+const expect = chai.expect;
 
-describe('API Tests', function () {
-    this.timeout(10000); // plus généreux
+chai.use(chaiHttp);
+
+describe("Intégration complète : Création utilisateur + Login + Ajout livre + Suppression livre", function () {
+    this.timeout(10000);
 
     let token = '';
     let userId = '';
     let spaceId = null;
-    let addedBookId = null;
+    let bookId = null;
 
     before((done) => {
         dbStart().then(() => {
             chai.request(app)
                 .post('/signup')
                 .send({
-                    username: 'user1',
-                    password: 'default',
-                    avatar: 'null',
-                    email: 'user1@example.com',
-                    name: 'test',
-                    lastname: 'testUser1'
+                    username: 'testUser',
+                    password: 'password123',
+                    email: 'testUser@example.com',
+                    name: 'Test',
+                    lastname: 'User',
+                    avatar: null
                 })
                 .end((err, res) => {
-                    if (err || res.status !== 200) {
-                        console.error("Échec de l'inscription, tentative de connexion...");
+                    if (res.status !== 200) {
+                        // utilisateur existe déjà → on tente le login
                         return chai.request(app)
                             .post('/login')
-                            .send({ username: 'user1', password: 'default' })
+                            .send({ username: 'testUser', password: 'password123' })
                             .end((err, res) => {
-                                if (err || res.status !== 200) {
-                                    console.error("Échec de la connexion :", err || res.text);
-                                    return done(err || new Error("Échec de la connexion"));
-                                }
+                                if (err || res.status !== 200) return done(err || new Error('Échec login'));
+
                                 token = res.body.token;
-                                const decodedToken = JSON.parse(Buffer.from(token.split(".")[1], 'base64').toString());
-                                userId = decodedToken.id;
-                                console.log("🔑 Token récupéré :", token);
+                                const decoded = JSON.parse(Buffer.from(token.split(".")[1], 'base64').toString());
+                                userId = decoded.id;
                                 done();
                             });
                     } else {
                         token = res.body.token;
-                        const decodedToken = JSON.parse(Buffer.from(token.split(".")[1], 'base64').toString());
-                        userId = decodedToken.id;
-                        console.log("✅ Utilisateur créé et token récupéré :", token);
+                        const decoded = JSON.parse(Buffer.from(token.split(".")[1], 'base64').toString());
+                        userId = decoded.id;
                         done();
                     }
                 });
         }).catch(done);
     });
 
-    it('should allow access with valid token', function (done) {
+    it("✅ Connexion autorisée avec token valide", (done) => {
         chai.request(app)
             .get('/profile')
             .set('Authorization', `Bearer ${token}`)
             .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('username').eql('user1');
+                expect(res).to.have.status(200);
+                expect(res.body).to.have.property('username', 'testUser');
                 done();
             });
     });
 
-    it('should add a new book and get space_id and book_id', function(done) {
+    it("📚 Ajout d’un nouveau livre", (done) => {
         const newBook = {
-            title: 'Test Book',
+            title: 'Integration Test Book',
             author: 'Test Author',
-            description: 'A test description',
+            description: 'Un livre ajouté via test',
             genre: 'Test Genre',
-            isbn: '1234567890123',
-            publishedDate: '2022-01-01',
-            page_count: 100,
+            isbn: '9876543210123',
+            publishedDate: '2023-01-01',
+            page_count: 321,
             status: 'available',
-            date_added: '2025-05-03',
+            date_added: '2025-05-12',
             cover: 'http://example.com/cover.jpg'
         };
 
@@ -83,29 +79,23 @@ describe('API Tests', function () {
             .set('Authorization', `Bearer ${token}`)
             .send(newBook)
             .end((err, res) => {
-                if (err) {
-                    console.error("Erreur lors de l'ajout du livre :", err);
-                    return done(err);
-                }
-                res.should.have.status(201);
-                res.body.should.be.an('object');
-                res.body.book.should.have.property('book_id');
-                res.body.should.have.property('space_id'); // espace lié
+                expect(res).to.have.status(201);
+                expect(res.body).to.have.property('book');
+                expect(res.body.book).to.have.property('book_id');
+                expect(res.body).to.have.property('space_id');
 
-                addedBookId = res.body.id;
                 spaceId = res.body.space_id;
-
-                console.log("Livre ajouté avec id:", addedBookId, "Espace id:", spaceId);
+                bookId = res.body.book.book_id; // Utilisation de bookId ici
                 done();
             });
     });
 
-    after((done) => {
+    after("🧹 Suppression de l’utilisateur", (done) => {
         chai.request(app)
             .delete(`/${userId}`)
             .set('Authorization', `Bearer ${token}`)
             .end((err, res) => {
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 done();
             });
     });

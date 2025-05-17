@@ -38,7 +38,7 @@ const addBook = async (req, res) => {
 
         const userId = req.user.id;
 
-        await spaceModel.create({
+        const createdSpace = await spaceModel.create({
             book_id: bookId,
             user_id: userId,
             status,
@@ -47,7 +47,7 @@ const addBook = async (req, res) => {
             date_added,
         })
 
-        return res.status(201).json({message: "Le livre a été ajouter avec succés", book: newBook})
+        return res.status(201).json({message: "Le livre a été ajouter avec succés", book: newBook,space_id: createdSpace.space_id})
     }
     catch(err) {
         console.error("Erreur lors de l'ajout du livre",err)

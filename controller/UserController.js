@@ -58,7 +58,6 @@ class UserController {
         }
     };
 
-    // Mettre à jour un utilisateur
     updateUser = async (req, res, next) => {
         const { id } = req.params;
         const { name, email, lastname, username, avatar } = req.body;

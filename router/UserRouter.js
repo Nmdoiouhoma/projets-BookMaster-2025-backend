@@ -16,7 +16,8 @@ router.get('/profile', authenticateUser, userController.getProfile);
 router.get('/reset-password/:token', passwordController.getResetPasswordPage);
 router.get('/user/me', authenticateUser, (req, res) => {
     res.json(req.userDetails);
-});
+    router.get('/getAvis',authenticateUser,bookController.getAvis);
+});;
 
 router.delete('/:id', authenticateUser, userController.deleteUser);
 router.delete('/deleteBook/:space_id/:book_id',authenticateUser, userController.deleteBook);

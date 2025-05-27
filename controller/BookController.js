@@ -53,6 +53,10 @@ const addBook = async (req, res) => {
         console.error("Erreur lors de l'ajout du livre",err)
         res.status(500).json({error: "Erreur interne du serveur"})
     }
+
+    const getAvis = async (req, res)=> {
+        /*@todo reccuperer les avis d'un utilisateur '*/
+    }
 }
 
 module.exports = {addBook}

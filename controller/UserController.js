@@ -60,15 +60,20 @@ class UserController {
 
     updateUser = async (req, res, next) => {
         const { id } = req.params;
-        const { name, email, lastname, username, avatar } = req.body;
+        const { name, email, lastname, username} = req.body;
 
-        if (!name && !email && !lastname && !username && !avatar) {
-            return res.status(400).json({ error: "Erreur: aucun des champs n'a été saisi" });
+        let avatarPath = null;
+
+        if (req.file) {
+            avatarPath = `/uploads/avatars/${req.file.filename}`;
+            console.log("Avatar téléchargé :", avatarPath);
+        } else {
+            console.log("Aucun avatars envoyé");
         }
 
         try {
             await UserModel.update(
-                { name, email, lastname, username, avatar },
+                { name, email, lastname, username, avatar: avatarPath },
                 { where: { id } }
             );
 
@@ -197,7 +202,7 @@ class UserController {
 
             const updatedBook = await spaceModel.findOne({ where: { user_id, book_id } });
 
-            console.log("📌 Nouveau status :", updatedBook.status, "📖 Page actuelle :", updatedBook.current_page);
+            console.log("Nouveau status :", updatedBook.status, "Page actuelle :", updatedBook.current_page);
 
             return res.status(200).json({
                 message: `Le livre avec l'ID ${book_id} a été mis à jour avec succès`,
@@ -205,7 +210,7 @@ class UserController {
             });
 
         } catch (error) {
-            console.error("❌ Erreur lors de la mise à jour du livre :", error);
+            console.error("rreur lors de la mise à jour du livre :", error);
             return res.status(500).json({ error: "Erreur serveur. Vérifiez les logs." });
         }
     };

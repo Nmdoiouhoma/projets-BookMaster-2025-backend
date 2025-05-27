@@ -34,6 +34,9 @@ const User = sequelize.define('user', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    dob: {
+        type: DataTypes.DATE,
+    }
 }, {
     timestamps: true,
     paranoid: true

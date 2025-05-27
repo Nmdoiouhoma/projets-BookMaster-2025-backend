@@ -1,12 +1,14 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
+const multer = require('multer');
+const app = express();
+const path = require('path');
 const Database = require("./config/database");
 const userRouter = require("./router/UserRouter");
 const userModel = require('./models/UserModel');
 const bookModel = require('./models/BookModel');
 const spaceModel = require('./models/SpaceModel');
-const app = express();
+
 const port = process.env.PORT || 3001;
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
@@ -15,7 +17,7 @@ app.use(express.json());
 
 app.use(cors({
     origin: "http://localhost:63342",
-    methods: "GET,POST,PUT,DELETE,PATCH",
+    methods: "GET,POST,PUT,DELETE,PATCH,OPTION",
     allowedHeaders: "Content-Type,Authorization"
 }));
 
@@ -40,23 +42,21 @@ const dbStart = async () => {
         await bookModel.sync({ alter: true });
         await spaceModel.sync({ alter: true });
     } catch (error) {
-        console.error("❌ Erreur lors du démarrage de l'application :", error);
+        console.error("Erreur lors du démarrage de l'application :", error);
         process.exit(1);
     }
 };
 
-// Vérifie si le fichier est exécuté directement
 if (require.main === module) {
     dbStart().then(() => {
         app.listen(port, () => {
             console.log(`Listening on the port ${port}`);
         });
     }).catch((error) => {
-        console.error("❌ Erreur lors du démarrage du serveur :", error);
+        console.error("Erreur lors du démarrage du serveur :", error);
     });
 }
 
-// Si ce fichier est importé dans un autre fichier, on ne démarre pas le serveur
 module.exports = {
     app,
     dbStart,

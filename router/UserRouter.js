@@ -7,6 +7,7 @@ const bookController = require('../controller/BookController')
 const upload = require("../middlewares/UploadMiddlewares");
 const router = express.Router();
 const userController = new UserController();
+const multer = require('multer')
 
 // Routes publiques
 router.get('/', userController.getHomePage);
@@ -19,7 +20,7 @@ router.get('/user/me', authenticateUser, (req, res) => {
 
 router.delete('/:id', authenticateUser, userController.deleteUser);
 router.delete('/deleteBook/:space_id/:book_id',authenticateUser, userController.deleteBook);
-router.patch('/:id', authenticateUser, userController.updateUser);
+router.patch('/updateUser/:id',upload.single("avatar"), authenticateUser, userController.updateUser);
 router.patch('/updateBook/:user_id/:book_id', authenticateUser, userController.updateBook)
 
 // Routes d'authentification

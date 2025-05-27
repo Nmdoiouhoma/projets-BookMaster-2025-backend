@@ -7,15 +7,14 @@ const { Op } = require('sequelize');
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 const createUser = async (req, res) => {
-    const { email, name, password, username, lastname } = req.body;
+    const { email, name, password, username, lastname, dob} = req.body;
     let avatarPath = null;
 
-    // Vérifie si un fichier avatar a été téléchargé
     if (req.file) {
         avatarPath = `/uploads/avatars/${req.file.filename}`;
-        console.log("✅ Avatar téléchargé :", avatarPath); // Log pour vérifier que l'avatar est bien reçu
+        console.log("Avatar téléchargé :", avatarPath);
     } else {
-        console.log("❌ Aucun avatar envoyé");
+        console.log("Aucun avatars envoyé");
     }
 
     try {
@@ -40,13 +39,14 @@ const createUser = async (req, res) => {
         // Hachage du mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Création de l'utilisateur avec ou sans avatar
+        // Création de l'utilisateur avec ou sans avatars
         const newUser = await userModel.create({
             email,
             name,
             username,
             lastname,
-            avatar: avatarPath, // Sauvegarde du chemin de l'avatar
+            dob,
+            avatar: avatarPath, // Sauvegarde du chemin de l'avatars
             password: hashedPassword
         });
 

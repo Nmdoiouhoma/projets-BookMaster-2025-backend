@@ -60,22 +60,21 @@ class UserController {
 
     updateUser = async (req, res, next) => {
         const { id } = req.params;
-        const { name, email, lastname, username} = req.body;
+        const { name, email, lastname, username } = req.body;
 
-        let avatarPath = null;
+        let fieldsToUpdate = { name, email, lastname, username };
 
         if (req.file) {
-            avatarPath = `/uploads/avatars/${req.file.filename}`;
+            const avatarPath = `/uploads/avatars/${req.file.filename}`;
             console.log("Avatar téléchargé :", avatarPath);
+            fieldsToUpdate.avatar = avatarPath;
         } else {
-            console.log("Aucun avatars envoyé");
+            console.log("Aucun avatar envoyé, l'ancien est conservé.");
         }
 
         try {
-            await UserModel.update(
-                { name, email, lastname, username, avatar: avatarPath },
-                { where: { id } }
-            );
+            // Mise à jour des champs dynamiques
+            await UserModel.update(fieldsToUpdate, { where: { id } });
 
             const updatedUser = await UserModel.findByPk(id);
             if (!updatedUser) {

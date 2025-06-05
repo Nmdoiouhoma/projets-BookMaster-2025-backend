@@ -16,7 +16,7 @@ router.get('/profile', authenticateUser, userController.getProfile);
 router.get('/reset-password/:token', passwordController.getResetPasswordPage);
 router.get('/user/me', authenticateUser, (req, res) => {
     res.json(req.userDetails);
-    router.get('/getAvis',authenticateUser,bookController.getAvis);
+   //@todo reccuperer l'avis d'un utilisateur :  router.get('/getAvis',authenticateUser,bookController.getAvis);
 });;
 
 router.delete('/:id', authenticateUser, userController.deleteUser);
@@ -29,6 +29,8 @@ router.post("/signup", upload.single("avatar"), authController.createUser);
 router.post('/login', authController.loginUser);
 
 router.post('/addBook', authenticateUser, bookController.addBook)
+router.post('/sendAvis', authenticateUser, bookController.sendAvis)
+//@todo permettre de creer un avis
 
 // Routes pour réinitialisation du mot de passe
 router.post('/forgot-password', passwordController.forgotPassword);

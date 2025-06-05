@@ -3,13 +3,31 @@ const { v4: uuidv4 } = require('uuid');
 const database = require('../config/database');
 const sequelize = new database().getSequelize();
 
-const Book = sequelize.define('Book', {
-    book_id: {
+const Avis = sequelize.define('Avis', {
+    avis_id: {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
-    author: {
+    user_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+    },
+    book_id:{
+        type: DataTypes.UUID,
+        allowNull: true,
+    },
+    book_liked: {
+        type: DataTypes.BOOLEAN,
+    },
+    user_avis:{
+        type: DataTypes.TEXT,
+    },
+    note: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    isbn: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -17,29 +35,8 @@ const Book = sequelize.define('Book', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    description: {
-        type: DataTypes.TEXT,
-    },
-    publishedDate: {
-        type: DataTypes.DATE,
-    },
-    genre: {
-        type: DataTypes.STRING,
-    },
-    isbn: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    page_count: {
-        type: DataTypes.INTEGER,
-    },
-    cover: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
 }, {
     timestamps: true,
     paranoid: true
-});
-
-module.exports = Book;
+})
+module.exports = Avis;

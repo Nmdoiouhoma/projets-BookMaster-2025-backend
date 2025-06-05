@@ -136,8 +136,33 @@ const sendAvis = async (req, res) => {
     }
 };
 
-const getAvis = async (req, res)=> {
-    /*@todo reccuperer les avis d'un utilisateur '*/
-}
+const getAvis = async (req, res) => {
+    const { book_id } = req.params;
+    try {
+        if (!book_id) {
+            return res.status(400).json({ error: "L'id du livre est requis !" });
+        }
 
-module.exports = {addBook, sendAvis}
+        const avis = await avisModel.findAll({
+            where: { book_id },
+            attributes: ['note', 'user_avis', 'book_liked', 'createdAt'],
+            include: [{
+                model: UserModel,
+                attributes: ['id', 'username', 'avatar']
+            }],
+            order: [['createdAt', 'DESC']]
+        });
+
+        if (!avis || avis.length === 0) {
+            return res.status(404).json({ error: "Aucun avis trouvé pour ce livre." });
+        }
+
+        return res.status(200).json({ avis });
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des avis :", error);
+        return res.status(500).json({ error: "Erreur interne du serveur" });
+    }
+};
+
+module.exports = {addBook, sendAvis, getAvis}

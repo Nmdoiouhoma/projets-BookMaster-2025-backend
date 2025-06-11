@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const bookModel = require('../models/BookModel')
 const spaceModel = require('../models/SpaceModel')
 const avisModel = require('../models/AvisModel')
+const usermodel = require('../models/UserModel')
 
 const addBook = async (req, res) => {
 
@@ -58,7 +59,6 @@ const addBook = async (req, res) => {
             author: newBook.author,
             date_added,
         })
-
 
         return res.status(201).json({
             message: "Le livre a été ajouté avec succès",
@@ -147,7 +147,7 @@ const getAvis = async (req, res) => {
             where: { book_id },
             attributes: ['note', 'user_avis', 'book_liked', 'createdAt'],
             include: [{
-                model: UserModel,
+                model: usermodel,
                 attributes: ['id', 'username', 'avatar']
             }],
             order: [['createdAt', 'DESC']]
@@ -165,4 +165,39 @@ const getAvis = async (req, res) => {
     }
 };
 
-module.exports = {addBook, sendAvis, getAvis}
+const addAvis = async (req, res) => {
+    try {
+        const { user_avis, isbn, title } = req.body;
+        const user_id = req.user.id;
+
+        if (!user_avis || (!isbn && !title)) {
+            return res.status(400).json({ error: "Champs requis manquants" });
+        }
+
+        const existingBook = await bookModel.findOne({
+            where: {
+                [Op.or]: [{ isbn }, { title }]
+            }
+        });
+
+        if (!existingBook) {
+            return res.status(404).json({ error: "Livre introuvable" });
+        }
+
+        const book_id = existingBook.book_id;
+
+        const newAvis = await avisModel.create({
+            user_avis,
+            user_id,
+            book_id
+        });
+
+        res.status(201).json({ message: "Avis ajouté avec succès", avis: newAvis });
+
+    } catch (e) {
+        console.error("Erreur serveur dans addAvis :", e);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+}
+
+module.exports = {addBook, sendAvis, getAvis, addAvis}

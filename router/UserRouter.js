@@ -31,7 +31,7 @@ router.post('/login', authController.loginUser);
 
 router.post('/addBook', authenticateUser, bookController.addBook)
 router.post('/sendAvis', authenticateUser, bookController.sendAvis)
-//@todo permettre de créer un avis
+router.post('/addAvis', authenticateUser, bookController.addAvis)
 
 // Routes pour réinitialisation du mot de passe
 router.post('/forgot-password', passwordController.forgotPassword);

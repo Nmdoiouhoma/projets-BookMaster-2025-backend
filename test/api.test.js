@@ -85,7 +85,7 @@ describe("Intégration complète : Création utilisateur + Login + Ajout livre +
                 expect(res.body).to.have.property('space_id');
 
                 spaceId = res.body.space_id;
-                bookId = res.body.book.book_id; // Utilisation de bookId ici
+                bookId = res.body.book.book_id;
                 done();
             });
     });
